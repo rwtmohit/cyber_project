@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Cyber Security Web Scanner</title>
+
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #121212;
+            color: white;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            flex-direction: column;
+        }
+
+        h1 {
+            margin-bottom: 20px;
+        }
+
+        input {
+            width: 350px;
+            padding: 10px;
+            font-size: 16px;
+            border: none;
+            outline: none;
+            border-radius: 6px;
+        }
+
+        button {
+            margin-top: 10px;
+            padding: 10px 15px;
+            font-size: 16px;
+            background-color: #0096FF;
+            color: white;
+            border: none;
+            cursor: pointer;
+            border-radius: 6px;
+        }
+
+        button:hover {
+            background-color: #0074CC;
+        }
+
+        #result {
+            margin-top: 30px;
+            width: 400px;
+            padding: 15px;
+            background: #1f1f1f;
+            border-radius: 8px;
+            font-family: monospace;
+            display: none;
+        }
+    </style>
+</head>
+
+<body>
+
+    <h1>🔍 Cyber Security URL Scanner</h1>
+
+    <input type="text" id="urlInput" placeholder="Enter website (example: https://google.com)">
+    <button onclick="scan()">Scan Now</button>
+
+    <div id="result"></div>
+
+    <script>
+        async function scan() {
+            const url = document.getElementById("urlInput").value;
+            const resultDiv = document.getElementById("result");
+
+            if (!url) {
+                alert("Please enter a URL!");
+                return;
+            }
+
+            resultDiv.style.display = "block";
+            resultDiv.innerHTML = "⏳ Scanning... Please wait...";
+
+            try {
+                const response = await fetch(`http://localhost:8080/api/v1/security/analyze?url=${encodeURIComponent(url)}`);
+                const data = await response.json();
+
+                resultDiv.innerHTML = `
+                    <strong>URL:</strong> ${data.url} <br><br>
+                    🔗 URL Pattern Score: ${data.urlPatternScore} <br>
+                    🔒 SSL Score: ${data.sslScore} <br>
+                    🛡 Header Score: ${data.headerScore} <br><br>
+                    <strong>📌 Final Score:</strong> ${data.finalScore} <br>
+                    <strong>🚦 Risk Level:</strong> ${data.riskLevel}
+                `;
+            } catch (error) {
+                resultDiv.innerHTML = "❌ Error connecting to backend: " + error;
+            }
+        }
+    </script>
+</body>
+</html>
