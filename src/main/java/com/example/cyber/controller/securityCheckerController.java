@@ -3,20 +3,31 @@ package com.example.cyber.controller;
 import com.example.cyber.services.urlanalysis;
 import com.example.cyber.services.score;
 import com.example.cyber.services.ssl;
+import com.example.cyber.services.DnsService;
 import com.example.cyber.services.header;
-
 import com.example.cyber.model.SSLReport;
+import com.example.cyber.model.DNSRecord;
 import com.example.cyber.model.HeaderSecurityResult;
-
-import java.util.HashMap;
-import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
+import org.xbill.DNS.Record;
+import org.xbill.DNS.ARecord;
+import org.xbill.DNS.MXRecord;
+import org.xbill.DNS.NSRecord;
 
-@RestController                      // Return JSON
-@RequestMapping("/api")               // API base path
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+@RestController
+@RequestMapping("/api") // optional but recommended
 public class securityCheckerController {
+
+    @Autowired
+private DnsService dnsService;
+
 
     @Autowired
     private urlanalysis urlAnalysisService;
@@ -30,48 +41,84 @@ public class securityCheckerController {
     @Autowired
     private header headerService;
 
-    /**
-     * Analyze website security and return results as JSON.
-     *
-     * Example:
-     * GET /api/analyze?url=https://google.com
-     */
     @GetMapping("/analyze")
-    public Map<String, Object> analyzeWebsite(@RequestParam String url) {
+    public Map<String, Object> analyzerWebsite(@RequestParam String url) {
 
         Map<String, Object> response = new HashMap<>();
 
         try {
-            // 1. URL analysis score
-            int urlScore = urlAnalysisService.analyzeURLScore(url);
+            int urlscore = urlAnalysisService.analyzeURLScore(url);
 
-            // 2. SSL evaluation (0 or 40)
             SSLReport sslReport = sslService.checkSSL(url);
-            int sslScore = (sslReport != null && sslReport.isValid()) ? 40 : 0;
+            int sslscore = (sslReport != null && sslReport.isValid()) ? 40 : 0;
 
-            // 3. Header security score
             HeaderSecurityResult headerResult = headerService.checkSecurityHeaders(url);
-            int headerScore = (headerResult != null) ? headerResult.score : 0;
+            int headerscore = (headerResult != null) ? headerResult.score : 0;
 
-            // 4. Calculate total score
-            int totalScore = scoreService.calculateTotalScore(sslScore, headerScore, urlScore);
+            DNSRecord dnsReport = dnsService.checkDNS(url);;
+            int totalscore = scoreService.calculateTotalScore(sslscore, headerscore, urlscore);
+            String riskLevel = scoreService.classifyRisk(totalscore);
 
-            // 5. Risk classification
-            String riskLevel = scoreService.classifyRisk(totalScore);
-
-            // Build JSON response
             response.put("url", url);
-            response.put("urlPatternScore", urlScore);
-            response.put("sslScore", sslScore);
-            response.put("headerScore", headerScore);
-            response.put("totalScore", totalScore);
-            response.put("riskLevel", riskLevel);
+            response.put("urlPatternScore", urlscore);
+            response.put("sslScore", sslscore);
+            response.put("headerScore", headerscore);
+            response.put("totalScore", totalscore);
+            response.put("risk_level", riskLevel);
+             Map<String, Object> dnsReadable = new HashMap<>();git status
+
+dnsReadable.put("A", convertA(dnsReport.getARecords()));
+dnsReadable.put("MX", convertMX(dnsReport.getMXRecords()));
+dnsReadable.put("NS", convertNS(dnsReport.getNSRecords()));
+dnsReadable.put("error", dnsReport.getError());
+
+response.put("dnsReport", dnsReadable);
 
         } catch (Exception e) {
-            response.put("status", "Error");
+            response.put("status", "error");
             response.put("message", e.getMessage());
         }
 
         return response;
     }
+    private List<String> convertA(org.xbill.DNS.Record[] records) {
+    List<String> list = new ArrayList<>();
+    if (records == null) return list;
+
+    for (Record r : records) {
+        if (r instanceof ARecord) {
+            list.add(((ARecord) r).getAddress().getHostAddress());
+        }
+    }
+    return list;
+}
+
+private List<Map<String, Object>> convertMX(org.xbill.DNS.Record[] records) {
+    List<Map<String, Object>> list = new ArrayList<>();
+    if (records == null) return list;
+
+    for (Record r : records) {
+        if (r instanceof MXRecord) {
+            MXRecord mx = (MXRecord) r;
+            list.add(Map.of(
+                    "priority", mx.getPriority(),
+                    "host", mx.getTarget().toString()
+            ));
+        }
+    }
+    return list;
+}
+
+private List<String> convertNS(org.xbill.DNS.Record[] records) {
+    List<String> list = new ArrayList<>();
+    if (records == null) return list;
+
+    for (Record r : records) {
+        if (r instanceof NSRecord) {
+            list.add(((NSRecord) r).getTarget().toString());
+        }
+    }
+    return list;
+}
+
 }

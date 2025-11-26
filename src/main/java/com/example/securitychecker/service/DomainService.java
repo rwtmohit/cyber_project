@@ -1,14 +1,14 @@
 package com.example.securitychecker.service;
 
 import com.example.cyber.model.DNSRecord;
-import com.example.cyber.services.domain;
+import com.example.cyber.services.DnsService;
 import org.xbill.DNS.Record;
 
 public class DomainService {
 
     public DNSInfo getDNSRecords(String domainName) {
-        domain d = new domain();
-        DNSRecord rec = d.getDNS(domainName);
+        DnsService d = new DnsService();
+        DNSRecord rec = d.checkDNS(domainName);
         return new DNSInfo(rec);
     }
 
