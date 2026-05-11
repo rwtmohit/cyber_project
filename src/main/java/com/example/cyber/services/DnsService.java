@@ -42,7 +42,7 @@ public class DnsService {
             return record;
         }
 
-        // Use lookup() correctly
+        
         record.setARecords(lookup(domain, Type.A));
         record.setMXRecords(lookup(domain, Type.MX));
         record.setNSRecords(lookup(domain, Type.NS));

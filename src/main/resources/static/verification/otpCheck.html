@@ -1,0 +1,22 @@
+<h2>Login</h2>
+<input type="email" id="loginEmail" placeholder="Email" />
+<input type="password" id="loginPassword" placeholder="Password" />
+<button onclick="login()">Login</button>
+
+<script>
+async function login() {
+    const response = await fetch("/login", {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+            email: document.getElementById("loginEmail").value,
+            password: document.getElementById("loginPassword").value
+        })
+    });
+
+    const data = await response.text();
+    alert(data);
+}
+</script>

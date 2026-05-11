@@ -1,11 +1,13 @@
 package com.example.cyber.controller;
 
 import com.example.cyber.services.urlanalysis;
+import com.example.cyber.services.whoisService;
 import com.example.cyber.services.score;
 import com.example.cyber.services.ssl;
 import com.example.cyber.services.DnsService;
 import com.example.cyber.services.header;
 import com.example.cyber.model.SSLReport;
+import com.example.cyber.model.whoisRecord;
 import com.example.cyber.model.DNSRecord;
 import com.example.cyber.model.HeaderSecurityResult;
 
@@ -22,11 +24,11 @@ import java.util.List;
 import java.util.Map;
 
 @RestController
-@RequestMapping("/api") // optional but recommended
+@RequestMapping("/api") 
 public class securityCheckerController {
 
     @Autowired
-private DnsService dnsService;
+    private DnsService dnsService;
 
 
     @Autowired
@@ -41,6 +43,9 @@ private DnsService dnsService;
     @Autowired
     private header headerService;
 
+    @Autowired
+    private whoisService WhoisService;
+
     @GetMapping("/analyze")
     public Map<String, Object> analyzerWebsite(@RequestParam String url) {
 
@@ -51,6 +56,9 @@ private DnsService dnsService;
 
             SSLReport sslReport = sslService.checkSSL(url);
             int sslscore = (sslReport != null && sslReport.isValid()) ? 40 : 0;
+
+             response.put("sslReport", sslReport);
+
 
             HeaderSecurityResult headerResult = headerService.checkSecurityHeaders(url);
             int headerscore = (headerResult != null) ? headerResult.score : 0;
@@ -65,14 +73,15 @@ private DnsService dnsService;
             response.put("headerScore", headerscore);
             response.put("totalScore", totalscore);
             response.put("risk_level", riskLevel);
-             Map<String, Object> dnsReadable = new HashMap<>();git status
+            
+            
+            Map<String, Object> dnsReadable = new HashMap<>();
+            dnsReadable.put("A", convertA(dnsReport.getARecords()));
+            dnsReadable.put("MX", convertMX(dnsReport.getMXRecords()));
+            dnsReadable.put("NS", convertNS(dnsReport.getNSRecords()));
+            dnsReadable.put("error", dnsReport.getError());
 
-dnsReadable.put("A", convertA(dnsReport.getARecords()));
-dnsReadable.put("MX", convertMX(dnsReport.getMXRecords()));
-dnsReadable.put("NS", convertNS(dnsReport.getNSRecords()));
-dnsReadable.put("error", dnsReport.getError());
-
-response.put("dnsReport", dnsReadable);
+            response.put("dnsReport", dnsReadable);
 
         } catch (Exception e) {
             response.put("status", "error");
@@ -81,6 +90,12 @@ response.put("dnsReport", dnsReadable);
 
         return response;
     }
+
+    @GetMapping("/whois")
+    public whoisRecord getWhois(@RequestParam String domain) {
+        return WhoisService.getWhoisInfo(domain);
+    }
+    // Helper methods to convert DNS records into readable formats
     private List<String> convertA(org.xbill.DNS.Record[] records) {
     List<String> list = new ArrayList<>();
     if (records == null) return list;

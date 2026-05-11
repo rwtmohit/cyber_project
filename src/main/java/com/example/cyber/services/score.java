@@ -12,15 +12,15 @@ public class score {
      * @return int Total Score (0-100)
      */
     public int calculateTotalScore(int sslScore, int domainScore, int urlanalysisScore) {
-        sslScore = Math.min(sslScore, 40);
-        domainScore = Math.min(domainScore, 60);
+        sslScore = Math.min(sslScore, 30);
+        domainScore = Math.min(domainScore, 50);
         urlanalysisScore = Math.min(urlanalysisScore, 20);
         return sslScore + domainScore + urlanalysisScore;
         
 }
 public String classifyRisk(int totalScore){
-    if(totalScore >= 100) return "Safe";
-    else if (totalScore >= 70) return "Moderate";
+    if(totalScore >= 70) return "Safe";
+    else if (totalScore >= 40) return "Moderate";
     return "High Risk";
 }
 }

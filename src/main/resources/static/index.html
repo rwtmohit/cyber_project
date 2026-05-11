@@ -1,99 +1,196 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <title>Cyber Security Web Scanner</title>
+<meta charset="UTF-8">
+<title>Security Analyzer</title>
+<style>
+    body {
+    margin: 0;
+    padding: 0;
+    font-family: "Poppins", sans-serif;
+    background: #f5f7fa;  /* soft light gray */
+    color: #333;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+}
 
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            background-color: #121212;
-            color: white;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
-            flex-direction: column;
-        }
+/* ===== Center Page Layout ===== */
+.wrapper {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    padding: 20px;
+}
 
-        h1 {
-            margin-bottom: 20px;
-        }
+/* ===== Modern Glass Container ===== */
+.container {
+    width: 450px;
+    background: rgba(255, 255, 255, 0.8);
+    padding: 25px 30px;
+    border-radius: 18px;
 
-        input {
-            width: 350px;
-            padding: 10px;
-            font-size: 16px;
-            border: none;
-            outline: none;
-            border-radius: 6px;
-        }
+    /* Soft shadow for modern effect */
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.08);
 
-        button {
-            margin-top: 10px;
-            padding: 10px 15px;
-            font-size: 16px;
-            background-color: #0096FF;
-            color: white;
-            border: none;
-            cursor: pointer;
-            border-radius: 6px;
-        }
+    /* Glass blur (for modern UI) */
+    backdrop-filter: blur(10px);
+}
 
-        button:hover {
-            background-color: #0074CC;
-        }
+/* ===== Container Heading ===== */
+.container h2 {
+    text-align: center;
+    margin-bottom: 20px;
+    color: #3a4d8f;
+    font-weight: 600;
+}
 
-        #result {
-            margin-top: 30px;
-            width: 400px;
-            padding: 15px;
-            background: #1f1f1f;
-            border-radius: 8px;
-            font-family: monospace;
-            display: none;
-        }
-    </style>
+/* ===== Input Fields ===== */
+input, select, textarea {
+    width: 100%;
+    padding: 12px;
+    margin-top: 10px;
+    border: 1px solid #d1d9e6;
+    border-radius: 10px;
+    font-size: 15px;
+    background: #fff;
+    transition: all 0.2s ease-in-out;
+}
+
+input:focus, select:focus, textarea:focus {
+    border-color: #6a8dff;
+    box-shadow: 0 0 5px rgba(106, 141, 255, 0.4);
+    outline: none;
+}
+
+/* ===== Submit Button ===== */
+button {
+    width: 100%;
+    padding: 12px;
+    margin-top: 20px;
+    border: none;
+    border-radius: 12px;
+    background: linear-gradient(135deg, #6a8dff, #5264d6);
+    color: white;
+    font-size: 16px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: 0.2s;
+}
+
+button:hover {
+    background: linear-gradient(135deg, #5264d6, #4050b5);
+    transform: translateY(-1px);
+}
+
+/* ===== Optional Info Box ===== */
+.info-box {
+    background: #eef3ff;
+    padding: 12px;
+    border-radius: 10px;
+    margin-bottom: 15px;
+    border-left: 4px solid #6a8dff;
+}
+
+    .label {
+        font-weight: bold;
+        color: #555;
+    }
+
+    .risk-high {
+        color: red;
+        font-weight: bold;
+    }
+
+    .risk-medium {
+        color: orange;
+        font-weight: bold;
+    }
+
+    .risk-low {
+        color: green;
+        font-weight: bold;
+    }
+
+    pre {
+        background: #eee;
+        padding: 10px;
+        border-radius: 8px;
+        white-space: pre-wrap;
+    }
+</style>
 </head>
-
 <body>
 
-    <h1>🔍 Cyber Security URL Scanner</h1>
+<div class="container">
+    <h2> URL Analyzer</h2>
 
-    <input type="text" id="urlInput" placeholder="Enter website (example: https://google.com)">
-    <button onclick="scan()">Scan Now</button>
+    <input type="text" id="urlInput" placeholder="Enter website URL, e.g. https://example.com">
+    <button onclick="analyze()">Analyze</button>
 
-    <div id="result"></div>
+    <div id="output" class="result-box" style="display:none;"></div>
+</div>
 
-    <script>
-        async function scan() {
-            const url = document.getElementById("urlInput").value;
-            const resultDiv = document.getElementById("result");
+<script>
+function analyze() {
+    const url = document.getElementById("urlInput").value.trim();
+    const output = document.getElementById("output");
 
-            if (!url) {
-                alert("Please enter a URL!");
-                return;
-            }
+    if (!url) {
+        alert("Please enter a URL.");
+        return;
+    }
 
-            resultDiv.style.display = "block";
-            resultDiv.innerHTML = "⏳ Scanning... Please wait...";
+    output.style.display = "block";
+    output.innerHTML = "<p>Loading...</p>";
 
-            try {
-                const response = await fetch(`http://localhost:8080/api/v1/security/analyze?url=${encodeURIComponent(url)}`);
-                const data = await response.json();
+    fetch(`http://localhost:8080/api/analyze?url=${encodeURIComponent(url)}`)
+        .then(res => res.json())
+        .then(data => {
+            console.log(data);
 
-                resultDiv.innerHTML = `
-                    <strong>URL:</strong> ${data.url} <br><br>
-                    🔗 URL Pattern Score: ${data.urlPatternScore} <br>
-                    🔒 SSL Score: ${data.sslScore} <br>
-                    🛡 Header Score: ${data.headerScore} <br><br>
-                    <strong>📌 Final Score:</strong> ${data.finalScore} <br>
-                    <strong>🚦 Risk Level:</strong> ${data.riskLevel}
-                `;
-            } catch (error) {
-                resultDiv.innerHTML = "❌ Error connecting to backend: " + error;
-            }
-        }
-    </script>
+            let riskClass = "risk-low";
+            if (data.risk_level === "High Risk") riskClass = "risk-high";
+            else if (data.risk_level === "Moderate") riskClass = "risk-medium";
+
+            output.innerHTML = `
+                <p><span class="label">URL:</span> ${data.url}</p>
+                <p><span class="label">URL Score:</span> ${data.urlPatternScore}</p>
+                <p><span class="label">SSL Score:</span> ${data.sslScore}</p>
+                <p><span class="label">Header Score:</span> ${data.headerScore}</p>
+                <p><span class="label">Total Score:</span> ${data.totalScore}</p>
+                <p><span class="label">Risk Level:</span> <span class="${riskClass}">${data.risk_level}</span></p>
+
+                <hr>
+
+                <h3>SSL Report</h3>
+                <p><span class="label">Host:</span> ${data.sslReport.host}</p>
+                <p><span class="label">Issuer:</span> ${data.sslReport.issuer}</p>
+                <p><span class="label">Issuer DN:</span> ${data.sslReport.issuerDN}</p>
+                <p><span class="label">Valid From:</span> ${data.sslReport.startDate}</p>
+                <p><span class="label">Valid Until:</span> ${data.sslReport.endDate}</p>
+                <p><span class="label">Is Certificate Valid?:</span> ${data.sslReport.valid}</p>
+                <hr>
+
+                <h3>DNS Report</h3>
+                <p><span class="label">A Records:</span> ${JSON.stringify(data.dnsReport.A)}</p>
+                <p><span class="label">NS Records:</span> ${JSON.stringify(data.dnsReport.NS)}</p>
+                <p><span class="label">MX Records:</span> ${JSON.stringify(data.dnsReport.MX)}</p>
+                <p><span class="label">Error:</span> ${data.dnsReport.error ?? "None"}</p>
+
+                <hr>
+
+                <h3>Full JSON Output</h3>
+                <pre>${JSON.stringify(data, null, 2)}</pre>
+            `;
+        })
+        .catch(err => {
+            output.innerHTML = `<p style="color:red;">Error: ${err}</p>`;
+        });
+}
+</script>
+
 </body>
 </html>
