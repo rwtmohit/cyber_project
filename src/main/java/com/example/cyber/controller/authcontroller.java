@@ -24,7 +24,7 @@ public class authcontroller {
         return authService.register(request);
     }
 
-    @PostMapping("/verify")
+    @PostMapping("/verify-otp")
     public String verify(@RequestBody VerifyOtpRequest request) {
         return authService.verifyOtp(request);
     }
