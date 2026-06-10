@@ -17,6 +17,10 @@ import org.xbill.DNS.Record;
 import org.xbill.DNS.ARecord;
 import org.xbill.DNS.MXRecord;
 import org.xbill.DNS.NSRecord;
+import com.example.cyber.services.PdfService;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -45,6 +49,8 @@ public class securityCheckerController {
 
     @Autowired
     private whoisService WhoisService;
+    @Autowired
+    private PdfService pdfService;
 
     @GetMapping("/analyze")
     public Map<String, Object> analyzerWebsite(@RequestParam String url) {
@@ -106,6 +112,19 @@ public class securityCheckerController {
         }
     }
     return list;
+}
+@GetMapping("/download-report")
+public ResponseEntity<byte[]> downloadReport(@RequestParam String url) {
+
+    Map<String, Object> reportData = analyzerWebsite(url);
+
+    byte[] pdfBytes = pdfService.generatePdf(reportData);
+
+    return ResponseEntity.ok()
+            .header(HttpHeaders.CONTENT_DISPOSITION,
+                    "attachment; filename=security-report.pdf")
+            .contentType(MediaType.APPLICATION_PDF)
+            .body(pdfBytes);
 }
 
 private List<Map<String, Object>> convertMX(org.xbill.DNS.Record[] records) {
