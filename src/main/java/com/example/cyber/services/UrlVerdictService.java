@@ -15,7 +15,8 @@ private final GoogleSafeBrowsingService safeBrowsingService;
 
     public UrlCheckResponse check(String url) {
         String googleStatus = safeBrowsingService.checkUrl(url);
-        String vtStatus = virusTotalService.checkUrl(url);
+        UrlScanResponse vtResponse = virusTotalService.checkUrl(url);
+        String vtStatus = vtResponse != null ? vtResponse.getStatus() : null;
 
         String verdict;
         String details;

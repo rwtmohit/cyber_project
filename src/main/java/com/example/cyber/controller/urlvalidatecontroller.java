@@ -13,9 +13,10 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 
-
-         @RequestMapping("/api/url")
+@RestController
+@RequestMapping("/api/url")
 public class urlvalidatecontroller {
 
     private final UrlVerdictService urlVerdictService;
@@ -43,8 +44,8 @@ public class urlvalidatecontroller {
     }
 
     @GetMapping("/virustotal")
-    public ResponseEntity<String> checkVirusTotal(@RequestParam("url") String url) {
-        String result = virusTotalService.checkUrl(url);
+    public ResponseEntity<UrlScanResponse> checkVirusTotal(@RequestParam("url") String url) {
+        UrlScanResponse result = virusTotalService.checkUrl(url);
         return ResponseEntity.ok(result);
     }
 }
