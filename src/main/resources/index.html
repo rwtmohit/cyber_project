@@ -1,0 +1,121 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>URL SCANNER - one step ahead</title>
+  <link rel="stylesheet" href="style.css">
+  <script defer src="script.js"></script>
+</head>
+<body>
+  
+  <div class="bg-image"></div>
+
+  <div class="ambient-bg">
+    <div class="orb orb-1"></div>
+    <div class="orb orb-2"></div>
+    <div class="orb orb-3"></div>
+  </div>
+
+  <div class="app-wrapper">
+    <header class="top-nav">
+      
+      <div class="brand-box">
+        <div class="brand">URL SCANNER</div>
+        <div class="brand-quote">one step ahead</div>
+      </div>
+      
+      <div class="nav-actions">
+        <button id="themeToggle" class="icon-button" title="Toggle Theme">☀️</button>
+        <button id="helpBtn" class="icon-button" title="Help">❓</button>
+      </div>
+      
+    </header>
+
+    <main class="content-stack">
+      
+      <section class="hero-card glass-panel fade-in delay-1">
+        <div class="hero-content">
+          <div class="hero-text">
+            <h2>Secure Your Browsing in Seconds</h2>
+            <p>Protect yourself from phishing scams, malware, and suspicious websites before you click. Our advanced URL Security Checker analyzes threats in real-time.</p>
+            <ul class="hero-features">
+              <li>🛡️ Instant Threat Analysis</li>
+              <li>🔒 SSL & DNS Verification</li>
+              <li>⚙️ Deep Security Header Assessment</li>
+            </ul>
+          </div>
+          <div class="hero-image">
+            <img src="https://it.uic.edu/wp-content/uploads/sites/360/2021/01/phishing-news.jpg" alt="Cyber Security Concept" />
+          </div>
+        </div>
+      </section>
+
+      <section class="analyze-section fade-in delay-2">
+        <div class="glass-search-box">
+          <div class="input-group">
+            <input id="urlInput" type="text" placeholder="Paste a link to scan (e.g., https://example.com)" />
+            <button id="analyzeBtn" class="btn-primary">Analyze</button>
+          </div>
+        </div>
+        </section>
+
+      <section class="report-card glass-panel hidden" id="reportCard">
+        <div class="card-header">
+          <div>
+            <div class="card-title">Security Report</div>
+            <div class="website" id="reportUrl">🌐 Waiting for target...</div>
+          </div>
+          <div class="status safe" id="reportStatus">🟢 SAFE</div>
+        </div>
+
+        <div class="score-section glass-inset">
+          <div class="score-title">Trust Score</div>
+          <div class="score" id="reportScore">0 / 100</div>
+          <div class="risk" id="reportRisk">-</div>
+        </div>
+
+        <div class="checks">
+          <div class="check-item glass-inset"><span>✅ SSL Certificate</span> <strong id="sslStatus">Unknown</strong></div>
+          <div class="check-item glass-inset"><span>✅ DNS Health</span> <strong id="dnsStatus">Unknown</strong></div>
+          <div class="check-item glass-inset"><span>✅ Malware Scan</span> <strong id="malwareStatus">Unknown</strong></div>
+          <div class="check-item glass-inset"><span>✅ Phishing Detection</span> <strong id="phishingStatus">Unknown</strong></div>
+          <div class="check-item glass-inset warning"><span>⚠️ Security Headers</span> <strong id="headersStatus">N/A</strong></div>
+        </div>
+
+        <div class="details-grid">
+          <div class="detail-item glass-inset"><span class="detail-label">IP Address</span> <strong id="ipAddress">N/A</strong></div>
+          <div class="detail-item glass-inset"><span class="detail-label">Domain Valid Until</span> <strong id="domainValid">N/A</strong></div>
+          <div class="detail-item glass-inset"><span class="detail-label">Certificate Issuer</span> <strong id="issuerName">N/A</strong></div>
+          <div class="detail-item glass-inset"><span class="detail-label">Certificate Age</span> <strong id="domainAge">N/A</strong></div>
+        </div>
+
+        <div class="report-actions">
+          <button id="downloadBtn" class="btn-secondary hidden">Download PDF Report</button>
+        </div>
+      </section>
+
+      <section class="info-section glass-panel fade-in delay-3">
+        <h2>Why Scan Before You Click?</h2>
+        <p>Every day, thousands of malicious websites are spun up to steal credentials and financial data. Our tool peeks behind the curtain of any URL.</p>
+        
+        <div class="info-grid">
+          <div class="info-block glass-inset">
+            <h3>🔒 SSL Verification</h3>
+            <p>Checks if the connection is truly encrypted.</p>
+          </div>
+          <div class="info-block glass-inset">
+            <h3>🛡️ Malware Scans</h3>
+            <p>Hunts for hidden malicious scripts.</p>
+          </div>
+          <div class="info-block glass-inset">
+            <h3>🎣 Phishing Protection</h3>
+            <p>Detects fake login pages impersonating brands.</p>
+          </div>
+        </div>
+      </section>
+
+    </main>
+  </div>
+</body>
+</html>
